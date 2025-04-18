@@ -1,0 +1,15 @@
+// Web version of "เปิดไมค์มายคราฟมือถือ (JAME)" // Features: Username, Push-to-Talk button, Socket.io integration
+
+import { useState, useEffect } from "react"; import io from "socket.io-client";
+
+const socket = io("http://192.168.1.100:3000"); // Replace with actual server IP
+
+export default function MicCraftWebApp() { const [username, setUsername] = useState(""); const [inputName, setInputName] = useState(""); const [isTalking, setIsTalking] = useState(false);
+
+useEffect(() => { if (username) { socket.emit("join", username); } }, [username]);
+
+const toggleMic = () => { const newState = !isTalking; setIsTalking(newState); socket.emit("mic-toggle", { name: username, talking: newState }); };
+
+if (!username) { return ( <div className="flex flex-col items-center justify-center h-screen p-4"> <h1 className="text-2xl mb-4">ตั้งชื่อผู้เล่น</h1> <input className="border p-2 rounded w-full max-w-xs" placeholder="ชื่อของคุณ" value={inputName} onChange={(e) => setInputName(e.target.value)} /> <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={() => inputName && setUsername(inputName)} > เริ่มใช้งาน </button> </div> ); }
+
+return ( <div className="flex flex-col items-center justify-center h-screen"> <h1 className="text-xl mb-4">เปิดไมค์ - {username}</h1> <button onClick={toggleMic} className={w-40 h-40 rounded-full text-white text-xl font-bold shadow-lg transition-colors duration-300 ${ isTalking ? "bg-green-500" : "bg-gray-500" }} > {isTalking ? "พูดอยู่" : "กดพูด"} </button> </div> ); }
